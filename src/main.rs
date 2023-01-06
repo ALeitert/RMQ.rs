@@ -6,6 +6,8 @@
 
 use std::fmt::Write;
 
+mod log;
+
 /// Converts the given time (in milliseconds) into the a string using appropriate unit.
 fn print_time(time: u64) -> String {
     const MIL_SEC: u64 = 1;
