@@ -7,6 +7,7 @@
 use std::fmt::Write;
 
 mod log;
+mod rmq;
 
 /// Converts the given time (in milliseconds) into the a string using appropriate unit.
 fn print_time(time: u64) -> String {
