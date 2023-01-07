@@ -1,9 +1,12 @@
-use std::marker::PhantomData;
+use std::{marker::PhantomData, rc::Rc};
+
+mod no_preprocessing;
+pub use no_preprocessing::NoPreprocessing;
 
 /// Represents an RMQ algorithms.
 pub trait Rmq<T> {
     /// Constructor.
-    fn new(data: &[T]) -> Self;
+    fn new(data: Rc<[T]>) -> Self;
 
     /// Pre-processes the data to allow queries.
     fn process_data(&self);
@@ -15,15 +18,25 @@ pub trait Rmq<T> {
     fn query(&self, i: usize, j: usize) -> usize;
 }
 
+/// Determines which of these indices stores the smaller value.
+#[inline]
+fn min_index<T: PartialOrd>(data: &[T], i: usize, j: usize) -> usize {
+    if data[i] < data[j] {
+        i
+    } else {
+        j
+    }
+}
+
 /// The reference "algorithm" which does nothing.
 /// We use it to determine the overhead needed to generate test cases and call queries.
-struct ReferenceRmq<T> {
+pub struct Reference<T> {
     // No data needed.
     phantom_data: PhantomData<T>,
 }
 
-impl<T> Rmq<T> for ReferenceRmq<T> {
-    fn new(_data: &[T]) -> Self {
+impl<T> Rmq<T> for Reference<T> {
+    fn new(_data: Rc<[T]>) -> Self {
         Self {
             phantom_data: PhantomData,
         }
