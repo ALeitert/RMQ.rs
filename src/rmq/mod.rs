@@ -1,6 +1,9 @@
 use std::{marker::PhantomData, rc::Rc};
 
+mod naive;
 mod no_preprocessing;
+
+pub use naive::Naive;
 pub use no_preprocessing::NoPreprocessing;
 
 /// Represents an RMQ algorithms.
@@ -9,7 +12,7 @@ pub trait Rmq<T> {
     fn new(data: Rc<[T]>) -> Self;
 
     /// Pre-processes the data to allow queries.
-    fn process_data(&self);
+    fn process_data(&mut self);
 
     /// Performs a query on the given data and given range.
     /// Returns the index of the minimum in that range.
@@ -42,7 +45,7 @@ impl<T> Rmq<T> for Reference<T> {
         }
     }
 
-    fn process_data(&self) {
+    fn process_data(&mut self) {
         // Do nothing.
     }
 

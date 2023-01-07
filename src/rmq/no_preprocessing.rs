@@ -14,7 +14,7 @@ impl<T: PartialOrd> Rmq<T> for NoPreprocessing<T> {
         Self { data }
     }
 
-    fn process_data(&self) {
+    fn process_data(&mut self) {
         // Do nothing.
     }
 
