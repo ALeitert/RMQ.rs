@@ -2,9 +2,11 @@ use std::{marker::PhantomData, rc::Rc};
 
 mod naive;
 mod no_preprocessing;
+mod segment_tree;
 
 pub use naive::Naive;
 pub use no_preprocessing::NoPreprocessing;
+pub use segment_tree::SegmentTree;
 
 /// Represents an RMQ algorithms.
 pub trait Rmq<T> {
@@ -24,6 +26,7 @@ pub trait Rmq<T> {
 /// Determines which of these indices stores the smaller value.
 #[inline]
 fn min_index<T: PartialOrd>(data: &[T], i: usize, j: usize) -> usize {
+    // ToDo: Make unchecked.
     if data[i] < data[j] {
         i
     } else {
