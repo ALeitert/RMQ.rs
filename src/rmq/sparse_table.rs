@@ -6,7 +6,7 @@ use super::{min_index, Rmq};
 
 // ToDo: Description
 /// Runtime: O(n log n) | O(1)
-pub struct SparseTable<T: PartialOrd> {
+pub struct SparseTable<T> {
     data: Rc<[T]>,
 
     /// Table with minimums in various ranges.
@@ -57,7 +57,7 @@ impl<T: PartialOrd> Rmq<T> for SparseTable<T> {
 
     fn query(&self, i: usize, j: usize) -> usize {
         // k = floor(log (j − i))
-        let k = log_f(j - i) as usize;
+        let k = log_f(j - i);
 
         // M[k, i]
         // M[k, j − 2^k + 1]
