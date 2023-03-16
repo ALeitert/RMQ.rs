@@ -6,18 +6,21 @@
 
 use std::fmt::Write;
 
+use crate::rmq::{Naive, NoPreprocessing, Reference, SegmentTree, SparseTable};
+
 mod log;
 mod rmq;
+mod rmq_test;
 mod tree;
 
 /// Converts the given time (in milliseconds) into the a string using appropriate unit.
-fn print_time(time: u64) -> String {
-    const MIL_SEC: u64 = 1;
-    const DEC_SEC: u64 = 100 * MIL_SEC;
-    const SECOND: u64 = 10 * DEC_SEC;
-    const MINUTE: u64 = 60 * SECOND;
-    const HOUR: u64 = 60 * MINUTE;
-    const DAY: u64 = 24 * HOUR;
+fn print_time(time: i64) -> String {
+    const MIL_SEC: i64 = 1;
+    const DEC_SEC: i64 = 100 * MIL_SEC;
+    const SECOND: i64 = 10 * DEC_SEC;
+    const MINUTE: i64 = 60 * SECOND;
+    const HOUR: i64 = 60 * MINUTE;
+    const DAY: i64 = 24 * HOUR;
 
     let mut time_str = String::new();
 
@@ -65,8 +68,8 @@ fn main() {
 
     println!("*** Reference ***");
     {
-        // ToDo: Implement and run algorithm.
-        let time_pair = (0, 0);
+        type RmqAlgo = Reference<rmq_test::Number>;
+        let time_pair = rmq_test::get_runtime::<RmqAlgo>(DATA_SIZE, QUERIES, SEED);
 
         println!("P: {}", print_time(time_pair.0));
         println!("Q: {}", print_time(time_pair.1));
@@ -77,8 +80,8 @@ fn main() {
 
     println!("*** No Pre-Processing ***");
     {
-        // ToDo: Implement and run algorithm.
-        let time_pair = (0, 0);
+        type RmqAlgo = NoPreprocessing<rmq_test::Number>;
+        let time_pair = rmq_test::get_runtime::<RmqAlgo>(DATA_SIZE, QUERIES, SEED);
 
         println!("P: {}", print_time(time_pair.0 - ref_time.0));
         println!("Q: {}", print_time(time_pair.1 - ref_time.1));
@@ -87,15 +90,16 @@ fn main() {
 
     println!("*** Naive ***");
     {
-        // ToDo: Implement and run algorithm.
-        let time_pair = (0, 0);
+        type RmqAlgo = Naive<rmq_test::Number>;
+        let time_pair = rmq_test::get_runtime::<RmqAlgo>(DATA_SIZE, QUERIES, SEED);
 
         println!("P: {}", print_time(time_pair.0 - ref_time.0));
         println!("Q: {}", print_time(time_pair.1 - ref_time.1));
 
         // Verify correctness.
         // ToDo: Implement and run algorithm.
-        let correct = true;
+        type VerifyAlgo = NoPreprocessing<rmq_test::Number>;
+        let correct = rmq_test::verify_algorithms::<RmqAlgo, VerifyAlgo>(DATA_SIZE, QUERIES, SEED);
 
         println!("C: {}", if correct { "Yes" } else { "No" });
         println!();
@@ -103,15 +107,15 @@ fn main() {
 
     println!("*** Segment Tree ***");
     {
-        // ToDo: Implement and run algorithm.
-        let time_pair = (0, 0);
+        type RmqAlgo = SegmentTree<rmq_test::Number>;
+        let time_pair = rmq_test::get_runtime::<RmqAlgo>(DATA_SIZE, QUERIES, SEED);
 
         println!("P: {}", print_time(time_pair.0 - ref_time.0));
         println!("Q: {}", print_time(time_pair.1 - ref_time.1));
 
         // Verify correctness.
-        // ToDo: Implement and run algorithm.
-        let correct = true;
+        type VerifyAlgo = Naive<rmq_test::Number>;
+        let correct = rmq_test::verify_algorithms::<RmqAlgo, VerifyAlgo>(DATA_SIZE, QUERIES, SEED);
 
         println!("C: {}", if correct { "Yes" } else { "No" });
         println!();
@@ -135,15 +139,15 @@ fn main() {
 
     println!("*** Sparse Table ***");
     {
-        // ToDo: Implement and run algorithm.
-        let time_pair = (0, 0);
+        type RmqAlgo = SparseTable<rmq_test::Number>;
+        let time_pair = rmq_test::get_runtime::<RmqAlgo>(DATA_SIZE, QUERIES, SEED);
 
         println!("P: {}", print_time(time_pair.0 - ref_time.0));
         println!("Q: {}", print_time(time_pair.1 - ref_time.1));
 
         // Verify correctness.
-        // ToDo: Implement and run algorithm.
-        let correct = true;
+        type VerifyAlgo = SegmentTree<rmq_test::Number>;
+        let correct = rmq_test::verify_algorithms::<RmqAlgo, VerifyAlgo>(DATA_SIZE, QUERIES, SEED);
 
         println!("C: {}", if correct { "Yes" } else { "No" });
         println!();
@@ -151,15 +155,14 @@ fn main() {
 
     println!("*** Plus Minus 1 ***");
     {
-        // ToDo: Implement and run algorithm.
-        let time_pair = (0, 0);
+        let time_pair = rmq_test::get_plus_minus_runtime(DATA_SIZE, QUERIES, SEED);
 
         println!("P: {}", print_time(time_pair.0 - ref_time.0));
         println!("Q: {}", print_time(time_pair.1 - ref_time.1));
 
         // Verify correctness.
-        // ToDo: Implement and run algorithm.
-        let correct = true;
+        type VerifyAlgo = SparseTable<rmq_test::Number>;
+        let correct = rmq_test::verify_plus_minus::<VerifyAlgo>(DATA_SIZE, QUERIES, SEED);
 
         println!("C: {}", if correct { "Yes" } else { "No" });
         println!();
@@ -194,7 +197,7 @@ fn main() {
         println!("P: {}", print_time(time_pair.0));
         println!("Q: {}", print_time(time_pair.1));
         println!();
-    
+
         ref_time = time_pair;
     }
 
