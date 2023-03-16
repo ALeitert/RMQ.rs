@@ -121,3 +121,43 @@ impl Tree {
         }
     }
 }
+
+/// Defines an algorithm to find the lowest common ancestor of two nodes in a
+/// tree using a given RMQ algorithm.
+pub struct Lca<'a, T: Rmq<NodeId>> {
+    tree: &'a Tree,
+    et: EulerTour,
+    rmq: T,
+}
+
+impl<'a, T: Rmq<NodeId>> Lca<'a, T> {
+    pub fn new(tree: &'a Tree) -> Self {
+        Self {
+            tree,
+            et: EulerTour {
+                e: Rc::from(vec![].into_boxed_slice()),
+                l: Rc::from(vec![].into_boxed_slice()),
+                r: Rc::from(vec![].into_boxed_slice()),
+            },
+            rmq: T::new(Rc::from(vec![].into_boxed_slice())),
+        }
+    }
+
+    pub fn process_data(&mut self) {
+        self.et = self.tree.euler_tour();
+        self.rmq = T::new(self.et.l.clone());
+        self.rmq.process_data();
+    }
+
+    pub fn query(&self, u_id: usize, v_id: usize) -> NodeId {
+        let r_u = self.et.r[u_id];
+        let r_v = self.et.r[v_id];
+
+        // Ensure that i <= j.
+        let i = std::cmp::min(r_u, r_v);
+        let j = std::cmp::max(r_u, r_v);
+
+        // LCA(u, v) = E[rmq(R[u], R[v])]
+        self.et.e[self.rmq.query(i, j)]
+    }
+}
