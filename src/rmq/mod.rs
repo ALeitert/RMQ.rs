@@ -2,12 +2,14 @@ use std::{marker::PhantomData, rc::Rc};
 
 mod naive;
 mod no_preprocessing;
+mod plus_minus;
 mod segment_tree;
 mod sparse_table;
 mod plus_minus;
 
 pub use naive::Naive;
 pub use no_preprocessing::NoPreprocessing;
+pub use plus_minus::PlusMinus;
 pub use segment_tree::SegmentTree;
 pub use sparse_table::SparseTable;
 pub use plus_minus::PlusMinus;

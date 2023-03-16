@@ -1,6 +1,4 @@
-use std::{
-    rc::Rc,
-};
+use std::rc::Rc;
 
 use crate::log::log_f;
 
@@ -36,8 +34,7 @@ pub struct PlusMinus<T> {
     class_rmq: Vec<Option<SparseTable<T>>>,
 }
 
-impl<T: PartialOrd + Copy> Rmq<T> for PlusMinus<T>
-{
+impl<T: PartialOrd + Copy> Rmq<T> for PlusMinus<T> {
     fn new(data: Rc<[T]>) -> Self {
         Self {
             data,

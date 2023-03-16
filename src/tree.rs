@@ -1,3 +1,7 @@
+use std::rc::Rc;
+
+use crate::rmq::Rmq;
+
 /// Represents the ID of a tree node.
 pub type NodeId = usize;
 
@@ -7,13 +11,13 @@ const NULL_NODE: NodeId = NodeId::MAX;
 /// Represents an [Euler tour](https://en.wikipedia.org/wiki/Euler_tour_technique) of a tree.
 pub struct EulerTour {
     /// The sequence of nodes visited during an Euler tour.
-    pub e: Vec<NodeId>,
+    pub e: Rc<[NodeId]>,
 
     /// The level (distance to root + 1) of each node in the Euler tour.
-    pub l: Vec<usize>,
+    pub l: Rc<[usize]>,
 
     /// The index of a node's last occurrence in the Euler tour.
-    pub r: Vec<usize>,
+    pub r: Rc<[usize]>,
 }
 
 /// Represents a rooted tree.
@@ -79,11 +83,9 @@ impl Tree {
     pub fn euler_tour(&self) -> EulerTour {
         let n = self.parents.len();
 
-        let mut result = EulerTour {
-            e: Vec::with_capacity(2 * n - 1),
-            l: Vec::with_capacity(2 * n - 1),
-            r: vec![0; n],
-        };
+        let mut e = Vec::with_capacity(2 * n - 1);
+        let mut l = Vec::with_capacity(2 * n - 1);
+        let mut r = vec![0; n];
 
         // Helpers to compute DFS
         let mut ch_idx = vec![0; n];
@@ -96,9 +98,9 @@ impl Tree {
             let v_id = unsafe { stack.last().copied().unwrap_unchecked() };
             let c_idx = unsafe { ch_idx.get_unchecked_mut(v_id) };
 
-            result.r[v_id] = result.e.len();
-            result.e.push(v_id);
-            result.l.push(stack.len());
+            r[v_id] = e.len();
+            e.push(v_id);
+            l.push(stack.len());
 
             if *c_idx < self.children[v_id].len() {
                 let child_id = self.children[v_id][*c_idx];
@@ -112,6 +114,10 @@ impl Tree {
             }
         }
 
-        result
+        EulerTour {
+            e: Rc::from(e.into_boxed_slice()),
+            l: Rc::from(l.into_boxed_slice()),
+            r: Rc::from(r.into_boxed_slice()),
+        }
     }
 }
